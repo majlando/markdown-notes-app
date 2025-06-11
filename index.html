@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markdown Notes App</title>
+    
+    <!-- Google Fonts for modern typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Fira+Code&display=swap" rel="stylesheet">
+
+    <!-- CSS styles are embedded directly into the HTML file -->
+    <style>
+        /* General Body and Root Styling */
+        :root {
+            --primary-bg: #1a1a1d;
+            --secondary-bg: #2b2d42;
+            --border-color: #4f5d75;
+            --text-primary: #edf2f4;
+            --text-secondary: #8d99ae;
+            --accent-color: #ef8354;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            background-color: var(--primary-bg);
+            color: var(--text-primary);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Header Styling */
+        .app-header {
+            text-align: center;
+            padding: 1rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .app-header h1 {
+            margin: 0;
+            color: var(--accent-color);
+        }
+
+        .app-header p {
+            margin: 0.25rem 0 0;
+            color: var(--text-secondary);
+        }
+
+        /* Main Content Layout */
+        .app-main {
+            display: flex;
+            flex-grow: 1;
+            width: 100%;
+            height: calc(100vh - 150px); /* Adjust based on header/footer height */
+        }
+
+        .editor-pane,
+        .preview-pane {
+            flex: 1;
+            padding: 1rem;
+            overflow-y: auto;
+            height: 100%;
+            box-sizing: border-box;
+        }
+
+        .editor-pane {
+            border-right: 1px solid var(--border-color);
+        }
+
+        .pane-title {
+            margin-top: 0;
+            color: var(--text-secondary);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        /* Textarea Editor Styling */
+        #editor {
+            width: 100%;
+            height: calc(100% - 40px);
+            border: none;
+            background-color: transparent;
+            color: var(--text-primary);
+            font-family: 'Fira Code', monospace;
+            font-size: 16px;
+            resize: none;
+            padding: 0.5rem;
+            box-sizing: border-box;
+        }
+
+        #editor:focus {
+            outline: none;
+            border-left: 2px solid var(--accent-color);
+            padding-left: calc(0.5rem - 2px);
+        }
+
+        /* Preview Pane Styling */
+        .markdown-body {
+            line-height: 1.7;
+        }
+
+        .markdown-body h1, .markdown-body h2, .markdown-body h3 {
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.3em;
+        }
+
+        .markdown-body code {
+            background-color: var(--secondary-bg);
+            padding: 0.2em 0.4em;
+            border-radius: 3px;
+            font-family: 'Fira Code', monospace;
+        }
+
+        .markdown-body pre {
+            background-color: var(--secondary-bg);
+            padding: 1rem;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+
+        .markdown-body blockquote {
+            border-left: 4px solid var(--border-color);
+            padding-left: 1rem;
+            color: var(--text-secondary);
+            margin-left: 0;
+        }
+
+        .markdown-body a {
+            color: var(--accent-color);
+            text-decoration: none;
+        }
+
+        .markdown-body a:hover {
+            text-decoration: underline;
+        }
+
+        /* Footer Styling */
+        .app-footer {
+            text-align: center;
+            padding: 1rem;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            border-top: 2px solid var(--border-color);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Section -->
+    <header class="app-header">
+        <h1>Markdown Notes</h1>
+        <p>Your Real-Time Markdown Editor</p>
+    </header>
+
+    <!-- Main Content: Editor and Preview Panes -->
+    <main class="app-main">
+        <section class="editor-pane">
+            <h2 class="pane-title">Editor</h2>
+            <textarea id="editor" placeholder="Start typing your markdown here..."></textarea>
+        </section>
+
+        <section class="preview-pane">
+            <h2 class="pane-title">Preview</h2>
+            <div id="preview" class="markdown-body">
+                <!-- Live preview will be rendered here by JavaScript -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer Section -->
+    <footer class="app-footer">
+        <p>Built with ❤️ using VS Code, WSL, and GitHub.</p>
+    </footer>
+
+    <!-- Load the marked.js library from a CDN for markdown parsing -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <!-- JavaScript logic is embedded directly into the HTML file -->
+    <script>
+        // Wait for the entire HTML document to be loaded before running the script
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // Get references to the HTML elements we need to work with
+            const editor = document.getElementById('editor');
+            const preview = document.getElementById('preview');
+
+            // Set some initial text in the editor to guide the user
+            const initialMarkdown = `
+# Welcome to your Markdown Notes App!
+
+## Start typing to see the magic happen.
+
+- Use hyphens for lists.
+- **Bold text** with asterisks.
+- \`inline code\` with backticks.
+
+\`\`\`javascript
+// Code blocks are easy too!
+function greet() {
+    console.log("Hello, world!");
+}
+\`\`\`
+
+> Blockquotes are great for quotes.
+
+[Visit GitHub](https://github.com) for more!
+            `;
+
+            // Function to update the preview pane
+            function updatePreview() {
+                // Use the 'marked' library to parse the text from the editor
+                // This 'marked' object is available because we loaded the library above
+                const html = marked.parse(editor.value);
+                // Set the innerHTML of the preview element to the converted HTML
+                preview.innerHTML = html;
+            }
+
+            // Set the initial value of the editor and update the preview
+            editor.value = initialMarkdown;
+            updatePreview();
+
+            // Add an event listener to the editor.
+            // The 'input' event fires every time the text changes.
+            editor.addEventListener('input', updatePreview);
+
+        });
+    </script>
+
+</body>
+</html>
