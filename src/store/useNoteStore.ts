@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { Note, NoteStore } from '@/types';
+import { Note, NoteStore, SortOption, SortDirection } from '@/types';
 
 const generateId = () => Math.random().toString(36).substr(2, 9);
 
@@ -11,6 +11,11 @@ export const useNoteStore = create<NoteStore>()(
       activeNoteId: null,
       searchQuery: '',
       isPreviewMode: false,
+      sortBy: 'updatedAt' as SortOption,
+      sortDirection: 'desc' as SortDirection,
+      lastSaved: null,
+      isAutoSaving: false,
+      showWelcome: true,
 
       addNote: (noteData) => {
         const newNote: Note = {
@@ -23,6 +28,7 @@ export const useNoteStore = create<NoteStore>()(
         set((state) => ({
           notes: [newNote, ...state.notes],
           activeNoteId: newNote.id,
+          showWelcome: false,
         }));
       },
 
@@ -33,6 +39,7 @@ export const useNoteStore = create<NoteStore>()(
               ? { ...note, ...updates, updatedAt: new Date() }
               : note
           ),
+          lastSaved: new Date(),
         }));
       },
 
@@ -62,17 +69,86 @@ export const useNoteStore = create<NoteStore>()(
         set((state) => ({ isPreviewMode: !state.isPreviewMode }));
       },
 
-      getFilteredNotes: () => {
-        const { notes, searchQuery } = get();
-        if (!searchQuery.trim()) return notes;
+      setSortBy: (sortBy) => {
+        set({ sortBy });
+      },
+
+      setSortDirection: (direction) => {
+        set({ sortDirection: direction });
+      },
+
+      toggleFavorite: (id) => {
+        set((state) => ({
+          notes: state.notes.map((note) =>
+            note.id === id
+              ? { ...note, isFavorite: !note.isFavorite, updatedAt: new Date() }
+              : note
+          ),
+        }));
+      },
+
+      setAutoSaving: (saving) => {
+        set({ isAutoSaving: saving });
+      },
+
+      setLastSaved: (date) => {
+        set({ lastSaved: date });
+      },
+
+      dismissWelcome: () => {
+        set({ showWelcome: false });
+      },
+
+      getSortedNotes: (notes) => {
+        const { sortBy, sortDirection } = get();
         
-        const query = searchQuery.toLowerCase();
-        return notes.filter(
-          (note) =>
-            note.title.toLowerCase().includes(query) ||
-            note.content.toLowerCase().includes(query) ||
-            note.tags?.some((tag) => tag.toLowerCase().includes(query))
-        );
+        return [...notes].sort((a, b) => {
+          // Favorites always come first
+          if (a.isFavorite && !b.isFavorite) return -1;
+          if (!a.isFavorite && b.isFavorite) return 1;
+          
+          let aValue: any;
+          let bValue: any;
+          
+          switch (sortBy) {
+            case 'title':
+              aValue = a.title.toLowerCase();
+              bValue = b.title.toLowerCase();
+              break;
+            case 'createdAt':
+              aValue = new Date(a.createdAt).getTime();
+              bValue = new Date(b.createdAt).getTime();
+              break;
+            case 'updatedAt':
+            default:
+              aValue = new Date(a.updatedAt).getTime();
+              bValue = new Date(b.updatedAt).getTime();
+              break;
+          }
+          
+          if (sortDirection === 'asc') {
+            return aValue > bValue ? 1 : -1;
+          } else {
+            return aValue < bValue ? 1 : -1;
+          }
+        });
+      },
+
+      getFilteredNotes: () => {
+        const { notes, searchQuery, getSortedNotes } = get();
+        let filteredNotes = notes;
+        
+        if (searchQuery.trim()) {
+          const query = searchQuery.toLowerCase();
+          filteredNotes = notes.filter(
+            (note) =>
+              note.title.toLowerCase().includes(query) ||
+              note.content.toLowerCase().includes(query) ||
+              note.tags?.some((tag) => tag.toLowerCase().includes(query))
+          );
+        }
+        
+        return getSortedNotes(filteredNotes);
       },
 
       getActiveNote: () => {
@@ -86,6 +162,9 @@ export const useNoteStore = create<NoteStore>()(
       partialize: (state) => ({
         notes: state.notes,
         activeNoteId: state.activeNoteId,
+        sortBy: state.sortBy,
+        sortDirection: state.sortDirection,
+        showWelcome: state.showWelcome,
       }),
     }
   )

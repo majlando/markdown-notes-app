@@ -83,3 +83,15 @@ export const formatDate = (date: Date): string => {
   
   return date.toLocaleDateString();
 };
+
+// Get reading time estimation
+export const getReadingTime = (content: string): number => {
+  const wordsPerMinute = 200;
+  const words = content.trim().split(/\s+/).filter(word => word.length > 0).length;
+  return Math.ceil(words / wordsPerMinute);
+};
+
+// Count words in content
+export const getWordCount = (content: string): number => {
+  return content.trim().split(/\s+/).filter(word => word.length > 0).length;
+};
