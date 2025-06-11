@@ -1,0 +1,134 @@
+/* General Body and Root Styling */
+:root {
+    --primary-bg: #1a1a1d;
+    --secondary-bg: #2b2d42;
+    --border-color: #4f5d75;
+    --text-primary: #edf2f4;
+    --text-secondary: #8d99ae;
+    --accent-color: #ef8354;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    background-color: var(--primary-bg);
+    color: var(--text-primary);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Header Styling */
+.app-header {
+    text-align: center;
+    padding: 1rem;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.app-header h1 {
+    margin: 0;
+    color: var(--accent-color);
+}
+
+.app-header p {
+    margin: 0.25rem 0 0;
+    color: var(--text-secondary);
+}
+
+/* Main Content Layout */
+.app-main {
+    display: flex;
+    flex-grow: 1;
+    width: 100%;
+    height: calc(100vh - 150px); /* Adjust based on header/footer height */
+}
+
+.editor-pane,
+.preview-pane {
+    flex: 1;
+    padding: 1rem;
+    overflow-y: auto;
+    height: 100%;
+    box-sizing: border-box;
+}
+
+.editor-pane {
+    border-right: 1px solid var(--border-color);
+}
+
+.pane-title {
+    margin-top: 0;
+    color: var(--text-secondary);
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+/* Textarea Editor Styling */
+#editor {
+    width: 100%;
+    height: calc(100% - 40px);
+    border: none;
+    background-color: transparent;
+    color: var(--text-primary);
+    font-family: 'Fira Code', monospace;
+    font-size: 16px;
+    resize: none;
+    padding: 0.5rem;
+    box-sizing: border-box;
+}
+
+#editor:focus {
+    outline: none;
+    border-left: 2px solid var(--accent-color);
+    padding-left: calc(0.5rem - 2px);
+}
+
+/* Preview Pane Styling */
+.markdown-body {
+    line-height: 1.7;
+}
+
+.markdown-body h1, .markdown-body h2, .markdown-body h3 {
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.3em;
+}
+
+.markdown-body code {
+    background-color: var(--secondary-bg);
+    padding: 0.2em 0.4em;
+    border-radius: 3px;
+    font-family: 'Fira Code', monospace;
+}
+
+.markdown-body pre {
+    background-color: var(--secondary-bg);
+    padding: 1rem;
+    border-radius: 5px;
+    overflow-x: auto;
+}
+
+.markdown-body blockquote {
+    border-left: 4px solid var(--border-color);
+    padding-left: 1rem;
+    color: var(--text-secondary);
+    margin-left: 0;
+}
+
+.markdown-body a {
+    color: var(--accent-color);
+    text-decoration: none;
+}
+
+.markdown-body a:hover {
+    text-decoration: underline;
+}
+
+/* Footer Styling */
+.app-footer {
+    text-align: center;
+    padding: 1rem;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    border-top: 2px solid var(--border-color);
+}
