@@ -15,6 +15,10 @@
 
     <!-- Link to external CSS file -->
     <link rel="stylesheet" href="style.css">
+
+    <!-- highlight.js CDN for syntax highlighting -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 </head>
 <body>
     <!-- Header Section -->
@@ -23,26 +27,43 @@
         <p>Your Real-Time Markdown Editor</p>
     </header>
 
-    <!-- Main Content: Editor and Preview Panes -->
-    <main class="app-main">
-        <section class="editor-pane">
-            <h2 class="pane-title">Editor</h2>
-            <textarea id="editor" placeholder="Start typing your markdown here..."></textarea>
-        </section>
+    <!-- Main Application Container -->
+    <div class="app-container">
+        <!-- Sidebar for Notes List and Controls -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>My Notes</h2>
+                <button id="new-note-btn" class="btn btn-primary">New Note</button>
+            </div>
+            <ul id="notes-list" class="notes-list-ul">
+                <!-- Note items will be dynamically inserted here -->
+            </ul>
+            <div class="sidebar-footer">
+                <button id="delete-note-btn" class="btn btn-danger" disabled>Delete Note</button>
+            </div>
+        </aside>
 
-        <section class="preview-pane">
-            <h2 class="pane-title">Preview</h2>
-            <div id="preview" class="markdown-body">
-                            </div>
-        </section>
-    </main>
+        <!-- Main Content: Editor and Preview Panes -->
+        <main class="app-main">
+            <section class="editor-pane">
+                <h2 class="pane-title">Editor</h2>
+                <textarea id="editor" placeholder="Start typing your markdown here..."></textarea>
+            </section>
+
+            <section class="preview-pane">
+                <h2 class="pane-title">Preview</h2>
+                <div id="preview" class="markdown-body">
+                                </div>
+            </section>
+        </main>
+    </div>
 
     <!-- Footer Section -->
     <footer class="app-footer">
         <p>Built with ❤️ using VS Code, WSL, and GitHub.</p>
     </footer>
 
-    <!-- Link to external JavaScript file -->
-    <script src="script.js"></script>
+    <!-- Link to external JavaScript file as a module -->
+    <script type="module" src="/script.js"></script>
 </body>
 </html>
